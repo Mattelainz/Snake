@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/home/mattelainz/Snake/build",
+  "command": "/usr/bin/clang++  -I/home/mattelainz/Snake/src -g -Wall -Wextra -Wpedantic -Werror -o CMakeFiles/Snake.dir/src/main.cpp.o -c /home/mattelainz/Snake/src/main.cpp",
+  "file": "/home/mattelainz/Snake/src/main.cpp",
+  "output": "CMakeFiles/Snake.dir/src/main.cpp.o"
+}
+]
