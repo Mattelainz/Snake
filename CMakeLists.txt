@@ -10,7 +10,8 @@ set(PROGRAM_SOURCES
 #   ${SNAKE_SOURCE_DIR}/game/snake_body.hpp
     ${SNAKE_SOURCE_DIR}/view/graphicFuncs.cpp
     ${SNAKE_SOURCE_DIR}/view/graphicFuncs.hpp
-
+    ${SNAKE_SOURCE_DIR}/view/mainMenu.cpp
+    ${SNAKE_SOURCE_DIR}/view/mainMenu.hpp
 )
 
 add_executable(Snake ${SNAKE_SOURCE_DIR}/main.cpp ${PROGRAM_SOURCES})

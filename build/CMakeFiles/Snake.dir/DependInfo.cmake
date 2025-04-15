@@ -10,6 +10,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/mnt/c/Users/chrid/Documents/Gits/snake/src/main.cpp" "CMakeFiles/Snake.dir/src/main.cpp.o" "gcc" "CMakeFiles/Snake.dir/src/main.cpp.o.d"
   "/mnt/c/Users/chrid/Documents/Gits/snake/src/view/graphicFuncs.cpp" "CMakeFiles/Snake.dir/src/view/graphicFuncs.cpp.o" "gcc" "CMakeFiles/Snake.dir/src/view/graphicFuncs.cpp.o.d"
+  "/mnt/c/Users/chrid/Documents/Gits/snake/src/view/mainMenu.cpp" "CMakeFiles/Snake.dir/src/view/mainMenu.cpp.o" "gcc" "CMakeFiles/Snake.dir/src/view/mainMenu.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

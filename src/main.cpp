@@ -1,24 +1,21 @@
-#include <cstring>
-#include <iostream>
-#include <ncurses.h>
-#include "view/graphicFuncs.hpp"
+#include "view/mainMenu.hpp"
 
-using namespace std;
+#include <cstring>
+#include <ncurses.h>
+#include <cstring>
+
 
 int main(int, char**){
     init();
-    
-    WINDOW *win = new_bordered_window(20, 100, 0, 0);
-
-    wrefresh(win);
-    startGame(win);
-    delwin(win);
+    mainPage();
     endGame();
     
     //mvwprintw(win, getmaxy(win) / 2, (getmaxx(win) - strlen(text)) / 2, "%s", text); -- nella window
-    //cout << "dd";
     
     return 0;
 }
 
+/*
 
+
+*/

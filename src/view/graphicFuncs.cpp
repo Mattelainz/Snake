@@ -1,8 +1,5 @@
-#include <charconv>
-#include <cstring>
-#include <iostream>
-#include <ncurses.h>
-#include "view/graphicFuncs.hpp"
+
+#include "graphicFuncs.hpp"
 
 using namespace std;
 
@@ -11,6 +8,7 @@ void init(){
     cbreak(); //serve per disabilitare "terminal line buffering"
     noecho(); //previene l'eco tra caratteri
     curs_set(0); //visibilità schermo
+    curs_set(TRUE);       //non nasconde il cursore
 
 }
 
@@ -23,49 +21,41 @@ WINDOW *new_bordered_window(int height, int width, int y, int x) {
     return window;
 }
 
+void drawFilledCircle(int center_y, int center_x, int radius_x, int radius_y,int color) {
+    init_pair(1, color, color);
+    attron(COLOR_PAIR(1));  //per settare il colore
+
+        for (int y = center_y - radius_y; y <= center_y + radius_y; y++) {
+            for (int x = center_x - radius_x; x <= center_x + radius_x; x++) {
+                //formula utilizzata = (x-x_center)^2/radius_x^2 + (y-y_center)^2/radius_y^2 >= 1 (formula ellisse)
+                double dx = x - center_x;
+                double dy = y - center_y;
+
+                if ((dx * dx) / (radius_x * radius_x) + 
+                    (dy * dy) / (radius_y * radius_y) < 1.0) {
+                    
+                    mvaddch(y, x, ACS_BLOCK); 
+                }
+            }
+        }
+    
+}
+
+bool isInside(const WindowRegionNode &region, int y, int x) {
+    return (y >= region.start_y && y < region.start_y + region.height) &&
+           (x >= region.start_x && x < region.start_x + region.width);
+}
 
 
 void endGame(){
     endwin();
 }
 
-void startGame(WINDOW* win){
-    int character = getch();
-    int posY = getmaxy(win) / 2;
-    int posX = (getmaxx(win) - strlen("X")) / 2;
-    mvwprintw(win, posY, posX, "%s", "X");
-
-    while(character != 120){
-
-        mvwprintw(win, getmaxy(win) / 2, (getmaxx(win) - strlen("X")) / 2, "%s", "X");
-        character = getch();
-
-        if(character == 66){ 
-            mvwprintw(win, posY++, posX, "%s", "X");
-        }
-        if(character == 67){ 
-            mvwprintw(win, posY, posX++, "%s", "X");
-        }
-        if(character == 65){
-            mvwprintw(win, posY--, posX, "%s", "X");
-        }
-        if(character == 68){ 
-            mvwprintw(win, posY, posX--, "%s", "X");
-        }
-
-        wrefresh(win);
-
-    }
+void startGame(){
 
 }
 /*
-void getChars(WINDOW* win){
-    while(true){
-        int c = getch();
-        mvwprintw(win, getmaxy(win) / 2, (getmaxx(win) - 3) / 2, "%d", c);
-        wrefresh(win);
-    }
-}
+
 
 
 */

@@ -177,6 +177,30 @@ src/view/graphicFuncs.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Snake.dir/build.make CMakeFiles/Snake.dir/src/view/graphicFuncs.cpp.s
 .PHONY : src/view/graphicFuncs.cpp.s
 
+src/view/mainMenu.o: src/view/mainMenu.cpp.o
+.PHONY : src/view/mainMenu.o
+
+# target to build an object file
+src/view/mainMenu.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Snake.dir/build.make CMakeFiles/Snake.dir/src/view/mainMenu.cpp.o
+.PHONY : src/view/mainMenu.cpp.o
+
+src/view/mainMenu.i: src/view/mainMenu.cpp.i
+.PHONY : src/view/mainMenu.i
+
+# target to preprocess a source file
+src/view/mainMenu.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Snake.dir/build.make CMakeFiles/Snake.dir/src/view/mainMenu.cpp.i
+.PHONY : src/view/mainMenu.cpp.i
+
+src/view/mainMenu.s: src/view/mainMenu.cpp.s
+.PHONY : src/view/mainMenu.s
+
+# target to generate assembly for a file
+src/view/mainMenu.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Snake.dir/build.make CMakeFiles/Snake.dir/src/view/mainMenu.cpp.s
+.PHONY : src/view/mainMenu.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -192,6 +216,9 @@ help:
 	@echo "... src/view/graphicFuncs.o"
 	@echo "... src/view/graphicFuncs.i"
 	@echo "... src/view/graphicFuncs.s"
+	@echo "... src/view/mainMenu.o"
+	@echo "... src/view/mainMenu.i"
+	@echo "... src/view/mainMenu.s"
 .PHONY : help
 
 
