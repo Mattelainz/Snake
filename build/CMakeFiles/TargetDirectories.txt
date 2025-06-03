@@ -1,3 +1,0 @@
-/mnt/c/Users/chrid/Documents/Gits/snake/build/CMakeFiles/Snake.dir
-/mnt/c/Users/chrid/Documents/Gits/snake/build/CMakeFiles/edit_cache.dir
-/mnt/c/Users/chrid/Documents/Gits/snake/build/CMakeFiles/rebuild_cache.dir
