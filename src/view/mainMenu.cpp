@@ -88,17 +88,17 @@ int getIdPage(MEVENT *event){
 
 
 void repaintAll(int max_x, int max_y, int selected){
-    WINDOW *choises[] = {
+    WINDOW *choices[] = {
       newwin(RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, (max_y/10)*2 - RADIUS_CIRCLE_Y , (max_x/2)-RADIUS_CIRCLE_X)
     , newwin(RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, (max_y/10)*5 - RADIUS_CIRCLE_Y, (max_x/2)-RADIUS_CIRCLE_X)
     , newwin(RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, (max_y/10)*8 - RADIUS_CIRCLE_Y, (max_x/2)-RADIUS_CIRCLE_X)};
 
     WindowRegionNode *curr = windList;
     int i = 0;
-    while(curr != nullptr && choises[i] != nullptr){
+    while(curr != nullptr && choices[i] != nullptr){
         delwin(curr->win);
-        curr->win = choises[i];
-        wrefresh(choises[i++]);
+        curr->win = choices[i];
+        wrefresh(choices[i++]);
         curr = curr->next;
     }
     
@@ -139,16 +139,16 @@ WINDOW* page(){
     mousemask(BUTTON1_CLICKED | REPORT_MOUSE_POSITION, NULL);
 
     int c; //getch of the button pressd 
-    int numChoise = 1;
+    int numchoice = 1;
 
     int numSegments = 2;
     int totalSnakeWidth = SNAKE_HEAD_W + numSegments * SNAKE_BODY_W;
     
     int originX = (max_x - totalSnakeWidth) ;
-    int originY = findWind(numChoise)->start_y +1;
+    int originY = findWind(numchoice)->start_y +1;
 
     drawSnake(originY, originX, numSegments);
-    repaintAll(max_x, max_y, numChoise);
+    repaintAll(max_x, max_y, numchoice);
     while ((c = getch()) != 27) {
         if(c == KEY_MOUSE){
             if (getmouse(&event) == OK) {
@@ -178,25 +178,25 @@ WINDOW* page(){
         }
         switch (c) {
             case KEY_UP :
-                if(numChoise == 2 || numChoise == 3){
-                    numChoise --;
-                    originY = findWind(numChoise)->start_y +1 ;
+                if(numchoice == 2 || numchoice == 3){
+                    numchoice --;
+                    originY = findWind(numchoice)->start_y +1 ;
                     clear();
                     drawSnake(originY, originX, numSegments);
-                    repaintAll(max_x, max_y,numChoise);
+                    repaintAll(max_x, max_y,numchoice);
                 }
             break;
             case KEY_DOWN :
-                if(numChoise == 1 || numChoise == 2 || numChoise == 0){
-                    numChoise ++;
-                    originY = findWind(numChoise)->start_y + 1;
+                if(numchoice == 1 || numchoice == 2 || numchoice == 0){
+                    numchoice ++;
+                    originY = findWind(numchoice)->start_y + 1;
                     clear();
-                    repaintAll(max_x, max_y,numChoise);
-                    drawSnake(originY, originX, numChoise);
+                    repaintAll(max_x, max_y,numchoice);
+                    drawSnake(originY, originX, numchoice);
                 }
             break;
             case '\n' : 
-                switch (numChoise) {
+                switch (numchoice) {
                     case 1: return nullptr;
 
                     case 2: return nullptr;
@@ -296,17 +296,17 @@ void insertNode(WindowRegionNode data){
 
 void initPage(int max_x,int max_y){
 
-    WINDOW *choise_1 = newwin(RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, (max_y/10)*2 - RADIUS_CIRCLE_Y , (max_x/2)-RADIUS_CIRCLE_X);
-    WINDOW *choise_2 = newwin(RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, (max_y/10)*5 - RADIUS_CIRCLE_Y, (max_x/2)-RADIUS_CIRCLE_X);
-    WINDOW *choise_3 = newwin(RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, (max_y/10)*8 - RADIUS_CIRCLE_Y, (max_x/2)-RADIUS_CIRCLE_X);
+    WINDOW *choice_1 = newwin(RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, (max_y/10)*2 - RADIUS_CIRCLE_Y , (max_x/2)-RADIUS_CIRCLE_X);
+    WINDOW *choice_2 = newwin(RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, (max_y/10)*5 - RADIUS_CIRCLE_Y, (max_x/2)-RADIUS_CIRCLE_X);
+    WINDOW *choice_3 = newwin(RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, (max_y/10)*8 - RADIUS_CIRCLE_Y, (max_x/2)-RADIUS_CIRCLE_X);
     
-    insertNode({choise_1, (max_y/10)*2 - RADIUS_CIRCLE_Y , (max_x/2)-RADIUS_CIRCLE_X,RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, nullptr});
-    insertNode({choise_2, (max_y/10)*5 - RADIUS_CIRCLE_Y , (max_x/2)-RADIUS_CIRCLE_X,RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, nullptr});
-    insertNode({choise_3,(max_y/10)*8 - RADIUS_CIRCLE_Y, (max_x/2)-RADIUS_CIRCLE_X, RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, nullptr});
+    insertNode({choice_1, (max_y/10)*2 - RADIUS_CIRCLE_Y , (max_x/2)-RADIUS_CIRCLE_X,RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, nullptr});
+    insertNode({choice_2, (max_y/10)*5 - RADIUS_CIRCLE_Y , (max_x/2)-RADIUS_CIRCLE_X,RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, nullptr});
+    insertNode({choice_3,(max_y/10)*8 - RADIUS_CIRCLE_Y, (max_x/2)-RADIUS_CIRCLE_X, RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, nullptr});
 
-    wrefresh(choise_1);
-    wrefresh(choise_2);
-    wrefresh(choise_3);
+    wrefresh(choice_1);
+    wrefresh(choice_2);
+    wrefresh(choice_3);
 
     drawFilledCircle(max_y/2, max_x/2, RADIUS_CIRCLE_X,RADIUS_CIRCLE_Y, 1);
     drawFilledCircle((max_y/10)*2, max_x/2, RADIUS_CIRCLE_X,RADIUS_CIRCLE_Y, 1);
@@ -343,11 +343,9 @@ WINDOW* mainPage(){
     start_color();          // attivare colori
 
     // Enable mouse tracking for xterm-compatible terminals.
-    printf("\033[?1003h\n");
-    fflush(stdout);
-    initPage(max_x, max_y);
-
-
+    //printf("\033[?1003h\n");
+    //fflush(stdout);
+    //initPage(max_x, max_y);
      
     return ret;
 }

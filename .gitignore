@@ -1054,3 +1054,5 @@ dkms.conf
 build/
 app
 ./app
+
+.vscode/

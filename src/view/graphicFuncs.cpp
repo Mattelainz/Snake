@@ -8,14 +8,13 @@ void init(){
     cbreak(); //serve per disabilitare "terminal line buffering"
     noecho(); //previene l'eco tra caratteri
     curs_set(0); //visibilità schermo
-    curs_set(TRUE);       //non nasconde il cursore
+    curs_set(TRUE);       //non nasconde il cursore // TODO: FIXME:
 
 }
 
 
 WINDOW *new_bordered_window(int height, int width, int y, int x) {
     WINDOW *window = newwin(height, width, y, x);
-    refresh();
     box(window, 0, 0);
     wrefresh(window);
     return window;
