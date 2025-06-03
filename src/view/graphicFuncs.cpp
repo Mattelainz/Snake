@@ -22,8 +22,7 @@ WINDOW *new_bordered_window(int height, int width, int y, int x) {
 }
 
 void drawFilledCircle(int center_y, int center_x, int radius_x, int radius_y,int color) {
-    init_pair(1, color, color);
-    attron(COLOR_PAIR(1));  //per settare il colore
+    attron(COLOR_PAIR(color));  //per settare il colore
 
         for (int y = center_y - radius_y; y <= center_y + radius_y; y++) {
             for (int x = center_x - radius_x; x <= center_x + radius_x; x++) {
@@ -38,7 +37,7 @@ void drawFilledCircle(int center_y, int center_x, int radius_x, int radius_y,int
                 }
             }
         }
-    
+        attroff(COLOR_PAIR(color));
 }
 
 bool isInside(const WindowRegionNode &region, int y, int x) {

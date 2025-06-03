@@ -1,11 +1,14 @@
 #include "mainMenu.hpp"
+#include "view/graphicFuncs.hpp"
 #include <ncurses.h>
+#include <random>
 
 static WindowRegionNode* windList = nullptr;
 
-// ------------------------------------------------------------------
-// Initialize our color pairs.
-// We use the same color for foreground and background to print a solid block.
+const static int RADIUS_CIRCLE_X = 15;
+const static int RADIUS_CIRCLE_Y = 3;
+
+
 void init_colorPairs() {
     //fare paring color dark green 
     init_color(COLOR_DARK_GREEN, 75,378, 154 );
@@ -14,6 +17,8 @@ void init_colorPairs() {
     init_pair(3, COLOR_BLACK,  COLOR_BLACK);     // Black (for details like eyes)
     init_pair(4, COLOR_RED,    COLOR_RED);       // Red (for tongue)
     init_pair(5, COLOR_DARK_GREEN, COLOR_DARK_GREEN);
+    init_pair(6, COLOR_BLACK, COLOR_DARK_GREEN);
+    init_pair(7, COLOR_BLACK, COLOR_GREEN);
 }
 
 
@@ -44,7 +49,6 @@ void drawShape2(int originY, int originX, int height, int width, const int shape
 }
 
 
-
 void drawSnake(int originY, int originX, int numBodySegments) {
     // Draw the snake head.
     drawShape(originY-2, originX+3, SNAKE_HEAD_H, SNAKE_HEAD_W, SNAKE_HEAD);
@@ -58,22 +62,14 @@ void drawSnake(int originY, int originX, int numBodySegments) {
     }
 }
 
-
-
-// Change the background color of the window (region) based on hover state.
-void updateWindowColor(const WindowRegionNode &region, int mouse_y, int mouse_x, 
-                         int hoverColorPair, int defaultColorPair) { //unused
-    if (isInside(region, mouse_y, mouse_x)) {
-        // Set the window to use the hover background.
-        wbkgd(region.win, COLOR_PAIR(hoverColorPair));
-    } else {
-        // Set the window back to the default background.
-        wbkgd(region.win, COLOR_PAIR(defaultColorPair));
+WindowRegionNode * findWind(int num){
+    WindowRegionNode* curr = windList;
+    for(int i = 0; i < num-1; i++){
+        curr = curr->next;
     }
-    // Redraw the border if you want.
-    box(region.win, 0, 0);
-    wrefresh(region.win);
+    return curr;
 }
+
 
 int getIdPage(MEVENT *event){
     if(windList == nullptr) return -1;
@@ -90,31 +86,77 @@ int getIdPage(MEVENT *event){
     return 0;
 }
 
+
+void repaintAll(int max_x, int max_y, int selected){
+    WINDOW *choises[] = {
+      newwin(RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, (max_y/10)*2 - RADIUS_CIRCLE_Y , (max_x/2)-RADIUS_CIRCLE_X)
+    , newwin(RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, (max_y/10)*5 - RADIUS_CIRCLE_Y, (max_x/2)-RADIUS_CIRCLE_X)
+    , newwin(RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, (max_y/10)*8 - RADIUS_CIRCLE_Y, (max_x/2)-RADIUS_CIRCLE_X)};
+
+    WindowRegionNode *curr = windList;
+    int i = 0;
+    while(curr != nullptr && choises[i] != nullptr){
+        delwin(curr->win);
+        curr->win = choises[i];
+        wrefresh(choises[i++]);
+        curr = curr->next;
+    }
+    
+    for (int i = 1; i <= 3; i++) {
+        auto *node = findWind(i);
+        int pair_id = (i == selected ? 5 : 1);
+        int cy = node->start_y + node->height/2;
+        int cx = node->start_x + node->width /2;
+        drawFilledCircle(cy, cx, RADIUS_CIRCLE_X, RADIUS_CIRCLE_Y, pair_id);
+    }
+    
+
+    attron(COLOR_PAIR(selected == 2 ? 6 : 7));
+    int textLen = strlen(" _____ __    _____ __ __");
+
+    move(max_y/2-2, max_x/2-textLen/2);
+    printw(" _____ __    _____ __ __");
+    move(max_y/2-1, max_x/2-textLen/2);
+    printw("|  _  |  |  |  _  |  |  |");
+    move(max_y/2, max_x/2-textLen/2);
+    printw("|   __|  |__|     |_   _|");
+    move(max_y/2+1, max_x/2-textLen/2); 
+    printw("|__|  |_____|__|__| |_|");
+
+    attroff(COLOR_PAIR(selected == 2 ? 6 : 7));
+
+    refresh();
+
+}
+
+
 WINDOW* page(){
-    //keypad(win1, TRUE); 
-    //keypad(win2, TRUE); 
-    //keypad(win3, TRUE); 
+    int max_x,max_y;
+    max_y = getmaxy(stdscr);
+    max_x = getmaxx(stdscr); 
     keypad(stdscr, TRUE);
     MEVENT event;
     mousemask(BUTTON1_CLICKED | REPORT_MOUSE_POSITION, NULL);
 
-    int c = 0;
+    int c; //getch of the button pressd 
+    int numChoise = 1;
 
-    while(c != 120){
-        c = getch();
+    int numSegments = 2;
+    int totalSnakeWidth = SNAKE_HEAD_W + numSegments * SNAKE_BODY_W;
+    
+    int originX = (max_x - totalSnakeWidth) ;
+    int originY = findWind(numChoise)->start_y +1;
+
+    drawSnake(originY, originX, numSegments);
+    repaintAll(max_x, max_y, numChoise);
+    while ((c = getch()) != 27) {
         if(c == KEY_MOUSE){
-            
             if (getmouse(&event) == OK) {
                 if (BUTTON1_PRESSED) {
                     switch (getIdPage(&event)) {
                         case -1:
                             return nullptr;
                         break;
-
-                        case 0:
-                            continue;
-                        break;
-
                         case 1:
                             return nullptr; // page 1
                         break;
@@ -132,15 +174,97 @@ WINDOW* page(){
                         break;
                     }
                 }
-            }else if(c == KEY_UP){
-                printw("zios");
             }
+        }
+        switch (c) {
+            case KEY_UP :
+                if(numChoise == 2 || numChoise == 3){
+                    numChoise --;
+                    originY = findWind(numChoise)->start_y +1 ;
+                    clear();
+                    drawSnake(originY, originX, numSegments);
+                    repaintAll(max_x, max_y,numChoise);
+                }
+            break;
+            case KEY_DOWN :
+                if(numChoise == 1 || numChoise == 2 || numChoise == 0){
+                    numChoise ++;
+                    originY = findWind(numChoise)->start_y + 1;
+                    clear();
+                    repaintAll(max_x, max_y,numChoise);
+                    drawSnake(originY, originX, numChoise);
+                }
+            break;
+            case '\n' : 
+                switch (numChoise) {
+                    case 1: return nullptr;
 
+                    case 2: return nullptr;
+
+                    case 3: return nullptr;
+
+                    default: return nullptr;
+                }
+            break;
         }
     }
     return nullptr;
+}
+
+void drawVerticalSnake(int startY) {
+    const int LETTERS = 5;
+    const int H = 5, W = 5;
+    const int SPACING = 1;  // blank rows between letters
+
+    // 5 letters × 5 rows × 5 cols: 1 = draw block; 0 = leave blank
+    static const int pattern[LETTERS][H][W] = {
+      // S
+      {{1,1,1,1,1},
+       {1,0,0,0,0},
+       {1,1,1,1,0},
+       {0,0,0,0,1},
+       {1,1,1,1,1}},
+      // N
+      {{1,0,0,0,1},
+       {1,1,0,0,1},
+       {1,0,1,0,1},
+       {1,0,0,1,1},
+       {1,0,0,0,1}},
+      // A
+      {{0,1,1,1,0},
+       {1,0,0,0,1},
+       {1,1,1,1,1},
+       {1,0,0,0,1},
+       {1,0,0,0,1}},
+      // K
+      {{1,0,0,0,1},
+       {1,0,0,1,0},
+       {1,1,1,0,0},
+       {1,0,0,1,0},
+       {1,0,0,0,1}},
+      // E
+      {{1,1,1,1,1},
+       {1,0,0,0,0},
+       {1,1,1,1,0},
+       {1,0,0,0,0},
+       {1,1,1,1,1}}
+    };
+
+    attron(COLOR_PAIR(1));
+    for (int L = 0; L < LETTERS; L++) {
+        int baseY = startY + L * (H + SPACING);
+        for (int r = 0; r < H; r++) {
+            for (int c = 0; c < W; c++) {
+                if (pattern[L][r][c]) {
+                    mvaddch(baseY + r, /*col=*/1 + c, ACS_BLOCK);
+                }
+            }
+        }
+    }
+    attron(COLOR_PAIR(2));
 
 }
+
 
 void insertNode(WindowRegionNode data){
     if(windList == nullptr){
@@ -171,10 +295,6 @@ void insertNode(WindowRegionNode data){
 
 
 void initPage(int max_x,int max_y){
-    const int RADIUS_CIRCLE_X = 15;
-    const int RADIUS_CIRCLE_Y = 3;
-
-    
 
     WINDOW *choise_1 = newwin(RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, (max_y/10)*2 - RADIUS_CIRCLE_Y , (max_x/2)-RADIUS_CIRCLE_X);
     WINDOW *choise_2 = newwin(RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, (max_y/10)*5 - RADIUS_CIRCLE_Y, (max_x/2)-RADIUS_CIRCLE_X);
@@ -184,19 +304,16 @@ void initPage(int max_x,int max_y){
     insertNode({choise_2, (max_y/10)*5 - RADIUS_CIRCLE_Y , (max_x/2)-RADIUS_CIRCLE_X,RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, nullptr});
     insertNode({choise_3,(max_y/10)*8 - RADIUS_CIRCLE_Y, (max_x/2)-RADIUS_CIRCLE_X, RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, nullptr});
 
-   // box(choise_1, 0, 0);
-   // box(choise_2, 0,0);
-   // box(choise_3, 0, 0);
     wrefresh(choise_1);
     wrefresh(choise_2);
     wrefresh(choise_3);
 
-    drawFilledCircle(max_y/2, max_x/2, RADIUS_CIRCLE_X,RADIUS_CIRCLE_Y, COLOR_GREEN);
-    drawFilledCircle((max_y/10)*2, max_x/2, RADIUS_CIRCLE_X,RADIUS_CIRCLE_Y, COLOR_GREEN);
-    drawFilledCircle((max_y/10)*8, max_x/2, RADIUS_CIRCLE_X,RADIUS_CIRCLE_Y, COLOR_GREEN);
+    drawFilledCircle(max_y/2, max_x/2, RADIUS_CIRCLE_X,RADIUS_CIRCLE_Y, 1);
+    drawFilledCircle((max_y/10)*2, max_x/2, RADIUS_CIRCLE_X,RADIUS_CIRCLE_Y, 1);
+    drawFilledCircle((max_y/10)*8, max_x/2, RADIUS_CIRCLE_X,RADIUS_CIRCLE_Y, 1);
     
-    init_pair(6, COLOR_BLACK, COLOR_GREEN);
-    attron(COLOR_PAIR(6));
+    init_colorPairs();
+    attron(COLOR_PAIR(7));
     int textLen = strlen(" _____ __    _____ __ __");
 
     move(max_y/2-2, max_x/2-textLen/2);
@@ -208,18 +325,11 @@ void initPage(int max_x,int max_y){
     move(max_y/2+1, max_x/2-textLen/2); 
     printw("|__|  |_____|__|__| |_|");
 
+    attroff(COLOR_PAIR(7));
+
+    drawVerticalSnake(1);   
+
     refresh();
-
-    init_colorPairs();
-    int numSegments = (max_x - SNAKE_HEAD_W) / SNAKE_BODY_W;
-    if(numSegments < 1) numSegments = 1; // ensure at least one segment
-
-    int totalSnakeWidth = SNAKE_HEAD_W + numSegments * SNAKE_BODY_W;
-    int originX = (max_x - totalSnakeWidth) ;      // center horizontally
-    int originY = (0) ;            // center vertically
-
-    drawSnake(originY, originX, numSegments);
-
     page();
 }
 
