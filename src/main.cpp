@@ -80,8 +80,15 @@ int main(int, char**){
 
     int score = 0;
 
+    wrefresh(win);
+
+    char last_chinput = ' ';
     while(1) {
-        switch (getch())
+        char chinput = wgetch(win);
+        if(chinput == ERR) {
+            chinput = last_chinput;
+        }
+        switch (chinput)
         {
         case 'w':
             y--;
@@ -151,6 +158,10 @@ int main(int, char**){
         mvprintw(0, 0, "Score: %d", score);
 
         wrefresh(win);
+
+        wtimeout(win, 500);
+
+        last_chinput = chinput;
         
         //sleep();
     }
