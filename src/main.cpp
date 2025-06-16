@@ -6,7 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-
+#include <unistd.h>
+#include <ctime>
 
 void draw() {
 
@@ -22,6 +23,28 @@ struct swag {
     int x;
     char type;
 };
+
+long long int getMillis() {
+    struct timespec ts;
+    timespec_get(&ts, TIME_UTC);
+    return uint64_t(ts.tv_sec) * 1000L + ts.tv_nsec / 1000000L;
+}
+int ii = 0;
+char getInput(WINDOW*win) {
+    long long int TIMEOUT = 10;
+    long long int start = getMillis();
+    char lastInput = ERR;
+    timeout(10);
+    int i = 0;
+    while(getMillis() - start <= TIMEOUT) {
+        //mvwprintw(win, 0, i++, "%c", (char)(97+ii));
+        char temp = getch();
+        if(temp != ERR)
+            lastInput = temp;
+    }
+    ii++;
+    return lastInput;
+}
 
 int main(int, char**){
     srand(time(NULL));
@@ -84,7 +107,8 @@ int main(int, char**){
 
     char last_chinput = ' ';
     while(1) {
-        char chinput = wgetch(win);
+        char chinput = getInput(win);
+        
         if(chinput == ERR) {
             chinput = last_chinput;
         }
@@ -148,8 +172,8 @@ int main(int, char**){
         } while((temp = temp->next) != nullptr);
 
         if(head->x == cibo->x && head->y == cibo->y) {
-            cibo->y = (int)(rand()%(height-2))+1;
-            cibo->x = (int)(rand()%(width-2))+1;
+            cibo->y = (int)(rand()%(height-2))+2;
+            cibo->x = (int)(rand()%(width-2))+2;
             score++;
         }
 
@@ -157,9 +181,11 @@ int main(int, char**){
 
         mvprintw(0, 0, "Score: %d", score);
 
+        //mvwprintw(win, 0, 20, "%d", getMillis());
+
         wrefresh(win);
 
-        wtimeout(win, 500);
+        //wtimeout(win, 500);
 
         last_chinput = chinput;
         
