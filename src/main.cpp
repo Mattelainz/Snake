@@ -167,6 +167,7 @@ int main(int, char**){
 
     mvwprintw(win, 50, 50, "boiode de dio can");
 
+    getch();
     
     //mvwprintw(win, getmaxy(win) / 2, (getmaxx(win) - strlen(text)) / 2, "%s", text); -- nella window
     
