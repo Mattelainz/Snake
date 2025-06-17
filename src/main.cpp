@@ -98,6 +98,14 @@ int main(int, char**){
             snake_move(last_chinput, &y, &x);
         } else last_chinput = chinput;
 
+        mvwprintw(win, cibo->y, cibo->x, "%c", cibo->type);
+        attroff(COLOR_PAIR(2));
+        mvprintw(0, 0, "Score: %d", score);
+
+        mvprintw(0, 20, "Time: %d", (getMillis()-start)/1000);
+
+        wrefresh(win);
+
 
         if(x >= width-1 || y >= height-1 || x <= 0 || y <= 0) {
             x = head->x;
@@ -146,17 +154,7 @@ int main(int, char**){
             score++;
         }
 
-        mvwprintw(win, cibo->y, cibo->x, "%c", cibo->type);
-        attroff(COLOR_PAIR(2));
-        mvprintw(0, 0, "Score: %d", score);
-
-        mvprintw(0, 20, "Time: %d", (getMillis()-start)/1000);
-
         wrefresh(win);
-
-        //wtimeout(win, 500);
-        
-        //sleep()
     }
 
 
