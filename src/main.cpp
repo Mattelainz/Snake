@@ -75,6 +75,8 @@ int main(int, char**){
 
     wrefresh(win);
 
+    long long int startTime = getMillis();
+
     char last_chinput = ' ';
     while(1) {
         char chinput = getInput(win);
@@ -151,7 +153,7 @@ int main(int, char**){
 
         mvprintw(0, 0, "Score: %d", score);
 
-        //mvwprintw(win, 0, 20, "%d", getMillis());
+        mvprintw(0, 20, "Time: %d", (getMillis() - startTime)/1000);
 
         wrefresh(win);
 
