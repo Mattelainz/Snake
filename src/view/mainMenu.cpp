@@ -158,7 +158,8 @@ void page(int max_x,int max_y){
     drawVerticalSnake((max_y < 32) ? 1 : max_y/2-16);   
 
     repaintAll(max_x, max_y, numchoice);
-    while ((c = getch()) != 27) {
+    bool cont = true;
+    while ((c = getch()) != 27 && cont) {
         switch (c) {
             case KEY_UP :
                 if(numchoice == 1 || numchoice == 2){
@@ -174,11 +175,12 @@ void page(int max_x,int max_y){
             break;
             case '\n' : 
                 switch (numchoice) {
-                    case 1: 
+                    case 0: 
                     break;
-                    case 2:
+                    case 1:
+                        cont = false;
                     break; 
-                    case 3:
+                    case 2:
                     break; 
                     default:
                     break;
@@ -186,11 +188,13 @@ void page(int max_x,int max_y){
             break;
         }
         clear();
+        refresh();
         repaintAll(max_x, max_y,numchoice);
         drawSnake(originY, originX, numSegments);
         
-    drawVerticalSnake((max_y < 32) ? 1 : max_y/2-16);   
+        drawVerticalSnake((max_y < 32) ? 1 : max_y/2-16);   
     }
+    clear();
 }
 
 

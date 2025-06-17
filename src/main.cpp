@@ -32,7 +32,7 @@ char getInput(WINDOW*win) {
     timeout(0);
     int i = 0;
     while((getMillis() - start) <= TIMEOUT) {
-        mvwprintw(win, 0, 20, "%d", (getMillis() - start));
+        //mvwprintw(win, 0, 20, "%d", (getMillis() - start));
         char temp = getch();
         if(temp != ERR)
             lastInput = temp;
@@ -59,6 +59,7 @@ int main(int, char**){
     //swag map[50][100];
 
     int snakeSize = 10;
+    int start = getMillis();
 
     
     // init serpente
@@ -74,8 +75,6 @@ int main(int, char**){
     int score = 0;
 
     wrefresh(win);
-
-    long long int startTime = getMillis();
 
     char last_chinput = ' ';
     while(1) {
@@ -150,10 +149,10 @@ int main(int, char**){
         }
 
         mvwprintw(win, cibo->y, cibo->x, "%c", cibo->type);
-
+        attroff(COLOR_PAIR(2));
         mvprintw(0, 0, "Score: %d", score);
 
-        mvprintw(0, 20, "Time: %d", (getMillis() - startTime)/1000);
+        mvprintw(0, 20, "Time: %d", (getMillis()-start)/1000);
 
         wrefresh(win);
 
