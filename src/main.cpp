@@ -26,8 +26,8 @@ struct swag {
 
 int ii = 0;
 char getInput(WINDOW*win) {
-     int TIMEOUT = 500;
-     int start = getMillis();
+    int TIMEOUT = 500;
+    int start = getMillis();
     char lastInput = ERR;
     timeout(0);
     int i = 0;
@@ -41,25 +41,14 @@ char getInput(WINDOW*win) {
     return lastInput;
 }
 
-bool snake_move(char chinput, int*x, int*y) {
-    switch (chinput)
-        {
-        case 'w':
-            y--;
-            break;
-        case 's':
-            y++;
-            break;
-        case 'a':
-            x--;
-            break;
-        case 'd':
-            x++;
-            break;
-        default:
-            return false;
-            break;
-        }
+bool snake_move(char chinput, int*y, int*x) {
+    switch (chinput) {
+        case 'w': (*y)--; break;
+        case 's': (*y)++; break;
+        case 'a': (*x)--; break;
+        case 'd': (*x)++; break;
+        default:    return false;
+    }
     return true;
 }
 
