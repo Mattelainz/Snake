@@ -110,7 +110,7 @@ int main(int, char**){
         if(x >= width-1 || y >= height-1 || x <= 0 || y <= 0) {
             x = head->x;
             y = head->y;
-            continue;
+            break;
         }
 
         bool tailBitten = false;
@@ -123,7 +123,9 @@ int main(int, char**){
                 break;
             }
         } while((temp = temp->next) != nullptr);
-        if(tailBitten) continue;
+        if(tailBitten) {
+            break;
+        }
 
         mvwprintw(win, tail->y, tail->x, " ");
 
@@ -158,7 +160,12 @@ int main(int, char**){
     }
 
 
-    getch();
+    clear();
+    wclear(win);
+    wrefresh(win);
+    refresh();
+
+    mvwprintw(win, 50, 50, "boiode de dio can");
 
     
     //mvwprintw(win, getmaxy(win) / 2, (getmaxx(win) - strlen(text)) / 2, "%s", text); -- nella window
