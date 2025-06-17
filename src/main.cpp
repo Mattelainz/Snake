@@ -165,12 +165,19 @@ int main(int, char**){
     wrefresh(win);
     refresh();
 
-    mvwprintw(win, 50, 50, "boiode de dio can");
+    echo();
+    mvwprintw(win, 20, 20, "inserire il tuo nome da frocio: ");
+    char str[100];
+    flushinp();    
+    wgetstr(win,str); 
+    wprintw(win,"\nHai scritto: %s", str);
+    wrefresh(win);
 
-    getch();
-    
+
+
+    wgetch(win);
     //mvwprintw(win, getmaxy(win) / 2, (getmaxx(win) - strlen(text)) / 2, "%s", text); -- nella window
-    
+    endwin();
     return 0;
 }
 
