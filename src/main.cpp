@@ -41,6 +41,28 @@ char getInput(WINDOW*win) {
     return lastInput;
 }
 
+bool snake_move(char chinput, int*x, int*y) {
+    switch (chinput)
+        {
+        case 'w':
+            y--;
+            break;
+        case 's':
+            y++;
+            break;
+        case 'a':
+            x--;
+            break;
+        case 'd':
+            x++;
+            break;
+        default:
+            return false;
+            break;
+        }
+    return true;
+}
+
 int main(int, char**){
     srand(time(NULL));
     init();
@@ -76,30 +98,14 @@ int main(int, char**){
 
     wrefresh(win);
 
-    char last_chinput = ' ';
+    char last_chinput = 'd';
     while(1) {
         char chinput = getInput(win);
         
         if(chinput == ERR) {
             chinput = last_chinput;
         }
-        switch (chinput)
-        {
-        case 'w':
-            y--;
-            break;
-        case 's':
-            y++;
-            break;
-        case 'a':
-            x--;
-            break;
-        case 'd':
-            x++;
-            break;
-        default:
-            break;
-        }
+        if(!snake_move(chinput, &y, &x)) snake_move(last_chinput, &y, &x);
 
         if(x >= width-1 || y >= height-1 || x <= 0 || y <= 0) {
             x = head->x;
