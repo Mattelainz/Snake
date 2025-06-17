@@ -94,7 +94,10 @@ int main(int, char**){
         if(chinput == ERR) {
             chinput = last_chinput;
         }
-        if(!snake_move(chinput, &y, &x)) snake_move(last_chinput, &y, &x);
+        if(!snake_move(chinput, &y, &x)) {
+            if(snake_move(last_chinput, &y, &x)) last_chinput = chinput;
+        } else last_chinput = chinput;
+
 
         if(x >= width-1 || y >= height-1 || x <= 0 || y <= 0) {
             x = head->x;
@@ -152,8 +155,6 @@ int main(int, char**){
         wrefresh(win);
 
         //wtimeout(win, 500);
-
-        last_chinput = chinput;
         
         //sleep()
     }
