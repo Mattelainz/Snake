@@ -95,7 +95,7 @@ int main(int, char**){
             chinput = last_chinput;
         }
         if(!snake_move(chinput, &y, &x)) {
-            if(snake_move(last_chinput, &y, &x)) last_chinput = chinput;
+            snake_move(last_chinput, &y, &x);
         } else last_chinput = chinput;
 
 
