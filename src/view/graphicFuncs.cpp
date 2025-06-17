@@ -9,7 +9,6 @@ void init(){
     noecho(); //previene l'eco tra caratteri
     curs_set(0); //visibilità schermo
     curs_set(TRUE);       //non nasconde il cursore // TODO: FIXME:
-
 }
 
 
@@ -37,11 +36,6 @@ void drawFilledCircle(int center_y, int center_x, int radius_x, int radius_y,int
             }
         }
         attroff(COLOR_PAIR(color));
-}
-
-bool isInside(const WindowRegionNode &region, int y, int x) {
-    return (y >= region.start_y && y < region.start_y + region.height) &&
-           (x >= region.start_x && x < region.start_x + region.width);
 }
 
 

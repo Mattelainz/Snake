@@ -9,13 +9,6 @@
 #include <unistd.h>
 #include <ctime>
 
-void draw() {
-
-}
-
-void sleep() {
-    for(int i = 0; i < 50000000; i++);
-}
 
 struct swag {
     swag*next;
@@ -24,20 +17,22 @@ struct swag {
     char type;
 };
 
-long long int getMillis() {
+ int getMillis() {
     struct timespec ts;
     timespec_get(&ts, TIME_UTC);
-    return uint64_t(ts.tv_sec) * 1000L + ts.tv_nsec / 1000000L;
+    return uint64_t(ts.tv_sec) * 1000 + ts.tv_nsec / 1000000;
 }
+
+
 int ii = 0;
 char getInput(WINDOW*win) {
-    long long int TIMEOUT = 10;
-    long long int start = getMillis();
+     int TIMEOUT = 500;
+     int start = getMillis();
     char lastInput = ERR;
-    timeout(10);
+    timeout(0);
     int i = 0;
-    while(getMillis() - start <= TIMEOUT) {
-        //mvwprintw(win, 0, i++, "%c", (char)(97+ii));
+    while((getMillis() - start) <= TIMEOUT) {
+        mvwprintw(win, 0, 20, "%d", (getMillis() - start));
         char temp = getch();
         if(temp != ERR)
             lastInput = temp;
@@ -49,33 +44,8 @@ char getInput(WINDOW*win) {
 int main(int, char**){
     srand(time(NULL));
     init();
-    //mainPage();
+    mainPage();
 
-
-    /*int max_y, max_x;
-    getmaxyx(stdscr, max_y, max_x); // Get screen size
-    WINDOW* ret = new_bordered_window(max_y , max_x , 0,0);
-
-    start_color();          // attivare colori
-
-    // Enable mouse tracking for xterm-compatible terminals.
-    //printf("\033[?1003h\n");
-    //fflush(stdout);
-    //initPage(max_x, max_y);
-
-    // gameloop
-    while(1) {
-        draw();
-    }*/
-
-    /*printw("swag");
-    int x = 0, y = 0;
-    char a = 'A';
-    while(1) {
-        mvprintw(y++, x++, "%c", a++);
-        refresh();
-        
-    }*/
     int width = 100;
     int height = 50;
     WINDOW*win = newwin(height, width, 2, 2);
@@ -189,12 +159,12 @@ int main(int, char**){
 
         last_chinput = chinput;
         
-        //sleep();
+        //sleep()
     }
 
 
     getch();
-    endGame();
+
     
     //mvwprintw(win, getmaxy(win) / 2, (getmaxx(win) - strlen(text)) / 2, "%s", text); -- nella window
     

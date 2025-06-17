@@ -1,9 +1,10 @@
 #include "mainMenu.hpp"
-#include "view/graphicFuncs.hpp"
+#include "graphicFuncs.hpp"
 #include <ncurses.h>
-#include <random>
+#include <cmath>
 
-static WindowRegionNode* windList = nullptr;
+
+static WindowRegionNode windArr[100];
 
 const static int RADIUS_CIRCLE_X = 15;
 const static int RADIUS_CIRCLE_Y = 3;
@@ -12,17 +13,17 @@ const static int RADIUS_CIRCLE_Y = 3;
 void init_colorPairs() {
     //fare paring color dark green 
     init_color(COLOR_DARK_GREEN, 75,378, 154 );
-    init_pair(1, COLOR_GREEN,  COLOR_GREEN);   // Green
+    init_pair(1, COLOR_GREEN,  COLOR_GREEN);   // green
     init_pair(2, COLOR_WHITE,  COLOR_WHITE);     // White
     init_pair(3, COLOR_BLACK,  COLOR_BLACK);     // Black (for details like eyes)
-    init_pair(4, COLOR_RED,    COLOR_RED);       // Red (for tongue)
+    init_pair(4, COLOR_RED,    COLOR_RED);       // red 
     init_pair(5, COLOR_DARK_GREEN, COLOR_DARK_GREEN);
     init_pair(6, COLOR_BLACK, COLOR_DARK_GREEN);
     init_pair(7, COLOR_BLACK, COLOR_GREEN);
 }
 
 
-void drawShape(int originY, int originX, int height, int width, const int shape[][SNAKE_HEAD_W]) {
+void drawShape(int originY, int originX, int height, int width, const int shape[][SNAKE_HEAD_W]) { //snake head
     for (int row = 0; row < height; row++) {
         for (int col = 0; col < width; col++) {
             int colorIndex = shape[row][col];
@@ -35,7 +36,7 @@ void drawShape(int originY, int originX, int height, int width, const int shape[
     }
 }
 
-void drawShape2(int originY, int originX, int height, int width, const int shape[][SNAKE_BODY_W]) {
+void drawShape2(int originY, int originX, int height, int width, const int shape[][SNAKE_BODY_W]) { //snake body
     for (int row = 0; row < height; row++) {
         for (int col = 0; col < width; col++) {
             int colorIndex = shape[row][col];
@@ -50,68 +51,26 @@ void drawShape2(int originY, int originX, int height, int width, const int shape
 
 
 void drawSnake(int originY, int originX, int numBodySegments) {
-    // Draw the snake head.
+    // testa snake
     drawShape(originY-2, originX+3, SNAKE_HEAD_H, SNAKE_HEAD_W, SNAKE_HEAD);
 
-    // Draw the body segments to the right of the head.
-    // Each body segment is drawn directly adjacent to the previous one.
-    int seg_originX = originX + SNAKE_HEAD_W; // start right after the head
+    // corpo a dx adiacente al precedente 
+    int seg_originX = originX + SNAKE_HEAD_W; // inizia dopo la testa
     for (int i = 0; i < numBodySegments; i++) {
         drawShape2(originY, seg_originX, SNAKE_BODY_H, SNAKE_BODY_W, SNAKE_BODY);
-        seg_originX += SNAKE_BODY_W; // move to next segment
+        seg_originX += SNAKE_BODY_W; 
     }
 }
-
-WindowRegionNode * findWind(int num){
-    WindowRegionNode* curr = windList;
-    for(int i = 0; i < num-1; i++){
-        curr = curr->next;
-    }
-    return curr;
-}
-
-
-int getIdPage(MEVENT *event){
-    if(windList == nullptr) return -1;
-
-    WindowRegionNode *curr = windList;
-    int i = 1;
-    while(curr != nullptr){
-        if(isInside(*curr, event->y, event->x)){
-            return i;
-        }
-        curr=curr->next;
-        i++;
-    }
-    return 0;
-}
-
 
 void repaintAll(int max_x, int max_y, int selected){
-    WINDOW *choices[] = {
-      newwin(RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, (max_y/10)*2 - RADIUS_CIRCLE_Y , (max_x/2)-RADIUS_CIRCLE_X)
-    , newwin(RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, (max_y/10)*5 - RADIUS_CIRCLE_Y, (max_x/2)-RADIUS_CIRCLE_X)
-    , newwin(RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, (max_y/10)*8 - RADIUS_CIRCLE_Y, (max_x/2)-RADIUS_CIRCLE_X)};
-
-    WindowRegionNode *curr = windList;
-    int i = 0;
-    while(curr != nullptr && choices[i] != nullptr){
-        delwin(curr->win);
-        curr->win = choices[i];
-        wrefresh(choices[i++]);
-        curr = curr->next;
-    }
     
-    for (int i = 1; i <= 3; i++) {
-        auto *node = findWind(i);
+    for (int i = 0; i < 3; i++) {
         int pair_id = (i == selected ? 5 : 1);
-        int cy = node->start_y + node->height/2;
-        int cx = node->start_x + node->width /2;
-        drawFilledCircle(cy, cx, RADIUS_CIRCLE_X, RADIUS_CIRCLE_Y, pair_id);
+        drawFilledCircle(windArr[i].posY, windArr[i].posX, RADIUS_CIRCLE_X, RADIUS_CIRCLE_Y, pair_id);
     }
     
 
-    attron(COLOR_PAIR(selected == 2 ? 6 : 7));
+    attron(COLOR_PAIR(selected == 1 ? 6 : 7));
     int textLen = strlen(" _____ __    _____ __ __");
 
     move(max_y/2-2, max_x/2-textLen/2);
@@ -129,94 +88,11 @@ void repaintAll(int max_x, int max_y, int selected){
 
 }
 
-
-WINDOW* page(){
-    int max_x,max_y;
-    max_y = getmaxy(stdscr);
-    max_x = getmaxx(stdscr); 
-    keypad(stdscr, TRUE);
-    MEVENT event;
-    mousemask(BUTTON1_CLICKED | REPORT_MOUSE_POSITION, NULL);
-
-    int c; //getch of the button pressd 
-    int numchoice = 1;
-
-    int numSegments = 2;
-    int totalSnakeWidth = SNAKE_HEAD_W + numSegments * SNAKE_BODY_W;
-    
-    int originX = (max_x - totalSnakeWidth) ;
-    int originY = findWind(numchoice)->start_y +1;
-
-    drawSnake(originY, originX, numSegments);
-    repaintAll(max_x, max_y, numchoice);
-    while ((c = getch()) != 27) {
-        if(c == KEY_MOUSE){
-            if (getmouse(&event) == OK) {
-                if (BUTTON1_PRESSED) {
-                    switch (getIdPage(&event)) {
-                        case -1:
-                            return nullptr;
-                        break;
-                        case 1:
-                            return nullptr; // page 1
-                        break;
-
-                        case 2:
-                        return nullptr; // page 2
-                        break;
-
-                        case 3:
-                        return nullptr; // page 3
-                        break;
-
-                        default:
-                            return nullptr; //how did you get here XD
-                        break;
-                    }
-                }
-            }
-        }
-        switch (c) {
-            case KEY_UP :
-                if(numchoice == 2 || numchoice == 3){
-                    numchoice --;
-                    originY = findWind(numchoice)->start_y +1 ;
-                    clear();
-                    drawSnake(originY, originX, numSegments);
-                    repaintAll(max_x, max_y,numchoice);
-                }
-            break;
-            case KEY_DOWN :
-                if(numchoice == 1 || numchoice == 2 || numchoice == 0){
-                    numchoice ++;
-                    originY = findWind(numchoice)->start_y + 1;
-                    clear();
-                    repaintAll(max_x, max_y,numchoice);
-                    drawSnake(originY, originX, numchoice);
-                }
-            break;
-            case '\n' : 
-                switch (numchoice) {
-                    case 1: return nullptr;
-
-                    case 2: return nullptr;
-
-                    case 3: return nullptr;
-
-                    default: return nullptr;
-                }
-            break;
-        }
-    }
-    return nullptr;
-}
-
 void drawVerticalSnake(int startY) {
     const int LETTERS = 5;
     const int H = 5, W = 5;
-    const int SPACING = 1;  // blank rows between letters
+    const int SPACING = 1;  //tra una lettera e l'altra
 
-    // 5 letters × 5 rows × 5 cols: 1 = draw block; 0 = leave blank
     static const int pattern[LETTERS][H][W] = {
       // S
       {{1,1,1,1,1},
@@ -256,7 +132,7 @@ void drawVerticalSnake(int startY) {
         for (int r = 0; r < H; r++) {
             for (int c = 0; c < W; c++) {
                 if (pattern[L][r][c]) {
-                    mvaddch(baseY + r, /*col=*/1 + c, ACS_BLOCK);
+                    mvaddch(baseY + r, 1 + c, ACS_BLOCK);
                 }
             }
         }
@@ -265,53 +141,61 @@ void drawVerticalSnake(int startY) {
 
 }
 
+void page(int max_x,int max_y){
+    keypad(stdscr, TRUE);
 
-void insertNode(WindowRegionNode data){
-    if(windList == nullptr){
-        windList = new WindowRegionNode;
-        windList->height = data.height;
-        windList->width = data.width;
-        windList->start_x = data.start_x;
-        windList->start_y = data.start_y;
-        windList->win = data.win;
-        windList->next = nullptr;
-        return;
-    }
-    WindowRegionNode *curr = windList;
+    int c; //getch of the button pressd 
+    int numchoice = 0;
 
-    while (curr->next != nullptr) {
-        curr = curr->next;
-    }
+    int numSegments = (max_x/3)/SNAKE_BODY_W-1;
+
+    int totalSnakeWidth = SNAKE_HEAD_W + numSegments * SNAKE_BODY_W;
     
-    WindowRegionNode* newNode = new WindowRegionNode;
-    newNode->height = data.height;
-    newNode->width = data.width;
-    newNode->start_x = data.start_x;
-    newNode->start_y = data.start_y;
-    newNode->win = data.win;
-    newNode->next = nullptr;
-    curr->next = newNode;
+    int originX = (max_x - totalSnakeWidth) ;
+    int originY = windArr[numchoice].posY +1;
+
+    drawSnake(originY, originX, numSegments);
+    drawVerticalSnake((max_y < 32) ? 1 : max_y/2-16);   
+
+    repaintAll(max_x, max_y, numchoice);
+    while ((c = getch()) != 27) {
+        switch (c) {
+            case KEY_UP :
+                if(numchoice == 1 || numchoice == 2){
+                    numchoice --;
+                    originY = windArr[numchoice].posY - 2 ;
+                }
+            break;
+            case KEY_DOWN :
+                if(numchoice == 0 || numchoice == 1 || numchoice < 0){
+                    numchoice ++;
+                    originY = windArr[numchoice].posY- 2;
+                }
+            break;
+            case '\n' : 
+                switch (numchoice) {
+                    case 1: 
+                    break;
+                    case 2:
+                    break; 
+                    case 3:
+                    break; 
+                    default:
+                    break;
+                }
+            break;
+        }
+        clear();
+        repaintAll(max_x, max_y,numchoice);
+        drawSnake(originY, originX, numSegments);
+        
+    drawVerticalSnake((max_y < 32) ? 1 : max_y/2-16);   
+    }
 }
 
 
 void initPage(int max_x,int max_y){
 
-    WINDOW *choice_1 = newwin(RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, (max_y/10)*2 - RADIUS_CIRCLE_Y , (max_x/2)-RADIUS_CIRCLE_X);
-    WINDOW *choice_2 = newwin(RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, (max_y/10)*5 - RADIUS_CIRCLE_Y, (max_x/2)-RADIUS_CIRCLE_X);
-    WINDOW *choice_3 = newwin(RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, (max_y/10)*8 - RADIUS_CIRCLE_Y, (max_x/2)-RADIUS_CIRCLE_X);
-    
-    insertNode({choice_1, (max_y/10)*2 - RADIUS_CIRCLE_Y , (max_x/2)-RADIUS_CIRCLE_X,RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, nullptr});
-    insertNode({choice_2, (max_y/10)*5 - RADIUS_CIRCLE_Y , (max_x/2)-RADIUS_CIRCLE_X,RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, nullptr});
-    insertNode({choice_3,(max_y/10)*8 - RADIUS_CIRCLE_Y, (max_x/2)-RADIUS_CIRCLE_X, RADIUS_CIRCLE_Y*2+1, RADIUS_CIRCLE_X*2+1, nullptr});
-
-    wrefresh(choice_1);
-    wrefresh(choice_2);
-    wrefresh(choice_3);
-
-    drawFilledCircle(max_y/2, max_x/2, RADIUS_CIRCLE_X,RADIUS_CIRCLE_Y, 1);
-    drawFilledCircle((max_y/10)*2, max_x/2, RADIUS_CIRCLE_X,RADIUS_CIRCLE_Y, 1);
-    drawFilledCircle((max_y/10)*8, max_x/2, RADIUS_CIRCLE_X,RADIUS_CIRCLE_Y, 1);
-    
     init_colorPairs();
     attron(COLOR_PAIR(7));
     int textLen = strlen(" _____ __    _____ __ __");
@@ -327,10 +211,10 @@ void initPage(int max_x,int max_y){
 
     attroff(COLOR_PAIR(7));
 
-    drawVerticalSnake(1);   
+    windArr[0] = {(int)(max_y*0.2),max_x/2};
+    windArr[1] = {(int)(max_y*0.5),max_x/2};
+    windArr[2] = {(int)(max_y*0.8),max_x/2};
 
-    refresh();
-    page();
 }
 
 
@@ -342,21 +226,8 @@ WINDOW* mainPage(){
 
     start_color();          // attivare colori
 
-    // Enable mouse tracking for xterm-compatible terminals.
-    //printf("\033[?1003h\n");
-    //fflush(stdout);
-    //initPage(max_x, max_y);
+    initPage(max_x, max_y);
+    page(max_x,max_y);
      
     return ret;
 }
-
-/*
-
-                           
- _____ __    _____ __ __   
-|  _  |  |  |  _  |  |  |  
-|   __|  |__|     |_   _|  
-|__|  |_____|__|__| |_|    
-                           
-
-*/

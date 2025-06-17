@@ -13,27 +13,27 @@
 #define COLOR_DARK_GREEN 5
 
 
-// Snake head pattern: 8 rows x 14 columns (pixel map)
-// Modify these numbers to adjust details of the head.
+// snake pattern testa: 8 righe x 14 cols
 static const int SNAKE_HEAD_H = 8;
 static const int SNAKE_HEAD_W = 14;
 static const int SNAKE_HEAD[SNAKE_HEAD_H][SNAKE_HEAD_W] = {
-    // Columns:  0 1 2 3 4 5 6 7 8 9 10 11 12 13
-    {          0,0,5,5,5,5,5,5,5,0, 0, 0, 0, 0 },  // Row 0
-    {          0,5,5,1,1,1,1,1,1,5, 5, 0, 0, 0 },  // Row 5
-    {          5,5,1,1,1,3,1,1,1,1, 5, 5, 0, 0 },  // Row 1 (black “eye” as 3)
-    {          5,1,1,1,1,1,1,1,1,1, 1, 5, 5, 0 },  // Row 3 (red “tongue” as 4)
-    {          4,4,1,1,1,1,1,1,1,1, 1, 5, 5, 0 },  // Row 4
-    {          5,5,1,1,1,1,1,1,1,1, 5, 5, 0, 0 },  // Row 5
-    {          0,5,5,1,1,1,1,1,1,5, 5, 0, 0, 0 },  // Row 6
-    {          0,0,5,5,5,5,5,5,5,0, 0, 0, 0, 0 }   // Row 7
+
+    {          0,0,5,5,5,5,5,5,5,0, 0, 0, 0, 0 },  
+    {          0,5,5,1,1,1,1,1,1,5, 5, 0, 0, 0 },  
+    {          5,5,1,1,1,3,1,1,1,1, 5, 5, 0, 0 },   
+    {          5,1,1,1,1,1,1,1,1,1, 1, 5, 5, 0 },   
+    {          4,4,1,1,1,1,1,1,1,1, 1, 5, 5, 0 },  
+    {          5,5,1,1,1,1,1,1,1,1, 5, 5, 0, 0 },  
+    {          0,5,5,1,1,1,1,1,1,5, 5, 0, 0, 0 },  
+    {          0,0,5,5,5,5,5,5,5,0, 0, 0, 0, 0 }   
 };
 
-// Snake body pattern: 8 rows x 10 columns (a simple bordered rectangle)
-// Here, "1" (green) is used for the border and "2" (white) for the inside.
+// Snake pattern del corpo: 8 righe x 10 cols
+// "1" (verde) per bordi e "2" (binaco) per l'interno
 static const int SNAKE_BODY_H = 4;
 static const int SNAKE_BODY_W = 15;
-static const int SNAKE_BODY[SNAKE_BODY_H][SNAKE_BODY_W] = {
+static const int SNAKE_BODY[SNAKE_BODY_H][SNAKE_BODY_W] = 
+{
     {5,5,5,5,5,5,5,5,5,5,5,5,5,5,5},
     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -44,18 +44,13 @@ void drawShape(int originY, int originX, int height, int width, const int shape[
 
 void drawShape2(int originY, int originX, int height, int width, const int shape[][SNAKE_BODY_W]);
 
-
 void updateWindowColor(const int numChoise, int color);
 
-int getIdPage(MEVENT *event);
-
-WINDOW* page();
+void page(int max_x, int max_y);
 
 void insertNode(WindowRegionNode data);
 
-
-void initPage(int max_x,int max_y);
-
+void initPage();
 
 WINDOW* mainPage();
 #endif
