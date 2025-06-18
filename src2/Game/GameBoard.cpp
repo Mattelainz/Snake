@@ -100,7 +100,8 @@ void startGame(){
 
         bool tailBitten = false;
         object*temp = tail;
-        do {
+        printf("%d", (temp->x));
+        do {    // check se si e' magnato la coda da solo
             if(temp->x == x && temp->y == y) {
                 x = head->x;
                 y = head->y;

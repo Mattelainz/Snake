@@ -10,8 +10,8 @@ struct object {
     char type;
 };
 
-static object *head,*tail;
-static int y, x, snakelen, speed;
+object *head,*tail;
+int y, x, snakelen, speed;
 
 void drawSnake(WINDOW* board);
 bool snake_move(char chinput, int*y, int*x);
