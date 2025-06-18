@@ -24,10 +24,12 @@ void deserialize(Scoreboard*scoreboard) {
 }
 
 
-void saveScore(int level, DataPlayer score, Scoreboard scoreboard) {
+void saveScore(int level, DataPlayer score, Scoreboard*scoreboard) {
     DataPlayer tmp[6];
+    memset(&tmp, 0x00, sizeof(DataPlayer)*6);
     DataPlayer t;
-    memcpy(tmp+sizeof(DataPlayer), scoreboard.levelScores[level], sizeof(DataPlayer)*5);
+    memset(&t, 0x00, sizeof(DataPlayer));
+    memcpy(tmp + 1, (*scoreboard).levelScores[level], sizeof(DataPlayer) * 5);
     for(int i = 0; i < 5; i++) {
         if(tmp[i+1].score < score.score) {
             memcpy(&tmp[i], &score, sizeof(DataPlayer));
@@ -37,7 +39,7 @@ void saveScore(int level, DataPlayer score, Scoreboard scoreboard) {
         memcpy(&tmp[i+1], &tmp[i], sizeof(DataPlayer));
         memcpy(&tmp[i], &t, sizeof(DataPlayer));
     }
-    memcpy(scoreboard.levelScores[level], tmp, sizeof(DataPlayer)*5);
+    memcpy((*scoreboard).levelScores[level], tmp, sizeof(DataPlayer)*5);
 }
 
 /*vector<DataPlayer> readFile(const string& filename) {

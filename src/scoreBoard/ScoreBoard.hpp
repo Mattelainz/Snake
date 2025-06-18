@@ -18,7 +18,7 @@ struct Scoreboard {
 
 void serialize(Scoreboard scoreboard);
 void deserialize(Scoreboard*scoreboard);
-void saveScore(int level, DataPlayer score, Scoreboard scoreboard);
+void saveScore(int level, DataPlayer score, Scoreboard*scoreboard);
 
 vector<DataPlayer> readFile(const string& filename);
 void appendFile(const string& filename, DataPlayer data);

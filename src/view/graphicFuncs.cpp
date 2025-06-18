@@ -43,9 +43,6 @@ void endGame(){
     endwin();
 }
 
-void startGame(){
-
-}
 /*
 
 

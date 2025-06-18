@@ -11,7 +11,6 @@ struct WindowRegionNode {
 };
 
 void init();
-void startGame();
 void endGame();
 WINDOW *new_bordered_window(int height, int width, int y, int x);
 
