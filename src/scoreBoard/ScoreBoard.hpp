@@ -20,9 +20,6 @@ void serialize(Scoreboard scoreboard);
 void deserialize(Scoreboard*scoreboard);
 void saveScore(int level, DataPlayer score, Scoreboard*scoreboard);
 
-vector<DataPlayer> readFile(const string& filename);
-void appendFile(const string& filename, DataPlayer data);
-bool deleteData(const string& filename, DataPlayer data);
-void sortData(vector<DataPlayer> arr);
+void printData(Scoreboard scoreboard);
 
 #endif

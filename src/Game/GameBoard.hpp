@@ -9,8 +9,9 @@
 #include <ctime>
 
 #define MAX_TIME 300
-static int max_x,max_y,score, height, width;
 
+static int max_x,max_y,score, height, width;
+static int TIMEOUT = 50;
 WINDOW* drawBoard();
 
 int getMillis() ;

@@ -1,5 +1,6 @@
 #include "GameBoard.hpp"
-#include "Snake/Snake.hpp"
+#include "Snake/Snake.hpp" 
+#include <cstdio>
 #include <ncurses.h>
 
 
@@ -28,11 +29,12 @@ int getMillis() {
 }
 
 char getInput(WINDOW*win) {
-    int TIMEOUT = 50;
+    int TIMEOUT = 500;
     int start = getMillis();
     char lastInput = ERR;
     timeout(0);
     int i = 0;
+    
     while((getMillis() - start) <= TIMEOUT) {
         //mvwprintw(win, 0, 20, "%d", (getMillis() - start));
         char temp = getch();
@@ -42,28 +44,42 @@ char getInput(WINDOW*win) {
     return lastInput;
 }
 
-void GameLoop( WINDOW* win){
-    int start = getMillis();
+void GameLoop(WINDOW* win, int gameStartMillis){
+    uint64_t elapsed = getMillis() - gameStartMillis;
+    int remaining = MAX_TIME - elapsed;
+    if(remaining < 0) remaining = 0;
 
-    mvwprintw(win, max_y*0.05, (max_x*0.1)+1, "TIME : %d:%d", (((MAX_TIME)-(getMillis()-start))/60)/1000, ((MAX_TIME-(getMillis()-start))%60)/1000);
-    mvwprintw(win, max_y*0.05, (max_x*0.5), "SCORE : %d",score);
-    mvwprintw(win,  max_y*0.9 + 1, (max_x*0.5)-2 , "LEVEL : %d", 1); //TODO: getLevel
-
+    int mm = (remaining / 1000) / 60;
+    int ss = (remaining / 1000) % 60;
+    mvwprintw(win, max_y*0.05, (max_x*0.1)+1,
+              "TIME : %02d:%02d", mm, ss);
+    mvwprintw(win, max_y*0.05, (max_x*0.5),
+              "SCORE : %d", score);
+    mvwprintw(win, max_y*0.9 + 1, (max_x*0.5)-2,
+              "LEVEL : %d", 1);
 }
+
 
 void startGame(){
     WINDOW* board = drawBoard();
-    object*cibo = new object{nullptr, (int)(rand()%(height-1)), (int)(rand()%(width-1)), 'a'};
+
+    snakelen = 3;
+    y = height / 2;
+    x = width  / 2;
+
+    object*cibo = new object{nullptr, (int)(rand()%(height-2)), (int)(rand()%(width-2)), 'a'};
     score = 0;
 
     drawSnake(board); //init list snake
 
-
     char last_chinput = 'd';
+
+    uint64_t startGame = getMillis();
+    //mvwprintw(stdscr, 12, 12, "%lu",startGame); // TODO: val negativo
 
     while(1){
         char chinput = getInput(board);
-        
+
         if(chinput == ERR) {
             chinput = last_chinput;
         }
@@ -113,7 +129,7 @@ void startGame(){
 
         temp = tail;
 
-        GameLoop(board);
+        GameLoop(board,startGame);
         do {
             mvwprintw(board, temp->y, temp->x, "%c", temp->type);
         } while((temp = temp->next) != nullptr);
@@ -126,9 +142,6 @@ void startGame(){
 
         wrefresh(board);
     }
-
-
-    
-
+    endwin();
 }
     

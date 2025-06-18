@@ -1,5 +1,6 @@
 #include "ScoreBoard.hpp"
 #include <cstdio>
+#include <ncurses.h>
 #include <string>
 #include <system_error>
 #include <stdio.h>
@@ -40,6 +41,39 @@ void saveScore(int level, DataPlayer score, Scoreboard*scoreboard) {
         memcpy(&tmp[i], &t, sizeof(DataPlayer));
     }
     memcpy((*scoreboard).levelScores[level], tmp, sizeof(DataPlayer)*5);
+}
+
+
+void printData(Scoreboard scoreboard, int level, WINDOW* win){
+    wclear(win);
+    box(win, 0, 0);
+    int max_x = getmaxx(stdscr);
+    int max_y = getmaxy(stdscr);
+
+    mvwprintw(win,max_y*0.1, max_x/2, "LEVEL %d SCORES",level );
+
+    for(int i = 4; i >= 0; i--){
+        mvwprintw(win, (max_y*(0.2*i)), max_x/2, "%s : %d", scoreboard.levelScores[level][i].name,scoreboard.levelScores[level][i].score );
+    }
+
+}
+
+void printScoreBoard(Scoreboard scoreboard, WINDOW* win){
+    char c = getch();
+    int level = 0;
+    while (c != 'x') {
+        switch (c) {
+            case KEY_LEFT:
+            level -= (level > 0) ? 1 : 0;
+            break;
+            case KEY_RIGHT:
+            level += (level < 29) ? 1 : 0;
+            break;
+            default:
+            break;
+        }
+        printData(scoreboard, level, win);
+    }
 }
 
 /*vector<DataPlayer> readFile(const string& filename) {
