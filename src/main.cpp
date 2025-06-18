@@ -8,6 +8,9 @@
 #include <time.h>
 #include <unistd.h>
 #include <ctime>
+#include <string>
+#include <fstream>
+#include "scoreBoard/ScoreBoard.hpp"
 
 
 struct swag {
@@ -52,7 +55,31 @@ bool snake_move(char chinput, int*y, int*x) {
     return true;
 }
 
+
 int main(int, char**){
+    /*Scoreboard scoreboard;
+    memset(&scoreboard, 0x00, sizeof(Scoreboard));
+    strncpy(scoreboard.levelScores[0][0].name, "ABC\0", 4);
+    scoreboard.levelScores[0][0].score = 3;
+    strncpy(scoreboard.levelScores[0][1].name, "SWA\0", 4);
+    scoreboard.levelScores[0][1].score = 5;
+    strncpy(scoreboard.levelScores[1][0].name, "GNG\0", 4);
+    scoreboard.levelScores[1][0].score = 15;
+
+    serialize(scoreboard);
+    Scoreboard scoreboard2;
+    memset(&scoreboard2, 0x00, sizeof(Scoreboard));
+    deserialize(&scoreboard2);
+
+    for(int i = 0; i < 30; i++) {
+        printf("Level %d:\n", i);
+        for(int j = 0; j < 5; j++) {
+            printf("\t%s: %d\n", scoreboard2.levelScores[i][j].name, scoreboard2.levelScores[i][j].score);
+        }
+    }
+
+    return 1;*/
+
     srand(time(NULL));
     init();
     mainPage();
@@ -160,6 +187,7 @@ int main(int, char**){
     }
 
 
+
     clear();
     wclear(win);
     wrefresh(win);
@@ -173,7 +201,14 @@ int main(int, char**){
     wprintw(win,"\nHai scritto: %s", str);
     wrefresh(win);
 
+    Scoreboard s;
+    memset(&s, 0x00, sizeof(Scoreboard));
 
+    DataPlayer p;
+    strncpy(p.name, str, 3);
+    p.score = score;
+    saveScore(0, p, s);
+    serialize(s);
 
     wgetch(win);
     //mvwprintw(win, getmaxy(win) / 2, (getmaxx(win) - strlen(text)) / 2, "%s", text); -- nella window

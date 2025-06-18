@@ -7,15 +7,22 @@
 
 using namespace std;
 
-struct dataPlayer{
-    std::string name;
+struct DataPlayer{
+    char name[4];
     int score;
-    short int lvl;
 };
 
-vector<dataPlayer> readFile(const string& filename);
-void appendFile(const string& filename, dataPlayer data);
-bool deleteData(const string& filename, dataPlayer data);
-void sortData(vector<dataPlayer> arr);
+struct Scoreboard {
+    DataPlayer levelScores[30][5];
+};
+
+void serialize(Scoreboard scoreboard);
+void deserialize(Scoreboard*scoreboard);
+void saveScore(int level, DataPlayer score, Scoreboard scoreboard);
+
+vector<DataPlayer> readFile(const string& filename);
+void appendFile(const string& filename, DataPlayer data);
+bool deleteData(const string& filename, DataPlayer data);
+void sortData(vector<DataPlayer> arr);
 
 #endif
