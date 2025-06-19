@@ -10,7 +10,7 @@ const static int RADIUS_CIRCLE_X = 15;
 const static int RADIUS_CIRCLE_Y = 3;
 
 
-void init_colorPairs() {
+void mainMenu::init_colorPairs() {
     //fare paring color dark green 
     init_color(COLOR_DARK_GREEN, 75,378, 154 );
     init_pair(1, COLOR_GREEN,  COLOR_GREEN);   // green
@@ -23,7 +23,7 @@ void init_colorPairs() {
 }
 
 
-void drawShape(int originY, int originX, int height, int width, const int shape[][SNAKE_HEAD_W]) { //snake head
+void mainMenu::drawShape(int originY, int originX, int height, int width, const int shape[][SNAKE_HEAD_W]) { //snake head
     for (int row = 0; row < height; row++) {
         for (int col = 0; col < width; col++) {
             int colorIndex = shape[row][col];
@@ -36,7 +36,7 @@ void drawShape(int originY, int originX, int height, int width, const int shape[
     }
 }
 
-void drawShape2(int originY, int originX, int height, int width, const int shape[][SNAKE_BODY_W]) { //snake body
+void mainMenu::drawShape2(int originY, int originX, int height, int width, const int shape[][SNAKE_BODY_W]) { //snake body
     for (int row = 0; row < height; row++) {
         for (int col = 0; col < width; col++) {
             int colorIndex = shape[row][col];
@@ -50,7 +50,7 @@ void drawShape2(int originY, int originX, int height, int width, const int shape
 }
 
 
-void drawSnake(int originY, int originX, int numBodySegments) {
+void mainMenu::drawSnake(int originY, int originX, int numBodySegments) {
     // testa snake
     drawShape(originY-2, originX+3, SNAKE_HEAD_H, SNAKE_HEAD_W, SNAKE_HEAD);
 
@@ -62,7 +62,7 @@ void drawSnake(int originY, int originX, int numBodySegments) {
     }
 }
 
-void repaintAll(int max_x, int max_y, int selected){
+void mainMenu::repaintAll(int max_x, int max_y, int selected){
     
     for (int i = 0; i < 3; i++) {
         int pair_id = (i == selected ? 5 : 1);
@@ -90,7 +90,7 @@ void repaintAll(int max_x, int max_y, int selected){
 
 }
 
-void drawVerticalSnake(int startY) {
+void mainMenu::drawVerticalSnake(int startY) {
     const int LETTERS = 5;
     const int H = 5, W = 5;
     const int SPACING = 1;  //tra una lettera e l'altra
@@ -143,7 +143,7 @@ void drawVerticalSnake(int startY) {
 
 }
 
-int page(int max_x,int max_y){
+int mainMenu::page(int max_x,int max_y){
     keypad(stdscr, TRUE);
 
     int c; //getch of the button pressd 
@@ -202,7 +202,7 @@ int page(int max_x,int max_y){
 }
 
 
-void initPage(int max_x,int max_y){
+void mainMenu::initPage(int max_x,int max_y){
 
     init_colorPairs();
 
@@ -213,7 +213,7 @@ void initPage(int max_x,int max_y){
 }
 
 
-int mainPage(){
+int mainMenu::mainPage(){
     
     int max_y, max_x;
     getmaxyx(stdscr, max_y, max_x); // Get screen size

@@ -1,5 +1,8 @@
 #include "view/mainMenu.hpp"
-#include "Game/Game.hpp"
+#include "game/Game.hpp"
+#include "scoreBoard/ScoreBoard.hpp"
+#include "Levels/levels.hpp"
+#include "view/mainMenu.hpp"
 #include "scoreBoard/ScoreBoard.hpp"
 
 #include <cstring>
@@ -14,29 +17,30 @@
 int main(int, char**){
     srand(time(NULL));
     init();
-    int choise = mainPage();
+    int choise = mainMenu::mainPage();
+
 
     if(choise == 0){
         WINDOW*score = newwin(getmaxy(stdscr)*0.8,getmaxx(stdscr)*0.8, getmaxy(stdscr)*0.1,getmaxx(stdscr)*0.1);
         wrefresh(score);
-        Scoreboard s;
-        memset(&s, 0x00, sizeof(Scoreboard));
-        DataPlayer p1 {"chr",2};
-        DataPlayer p2 {"ddd",5};
-        DataPlayer p3 {"sss",6};
-        DataPlayer p4{"cri",7};
-        DataPlayer p5 {"cnn",2};
-        saveScore(0, p1, &s);
-        saveScore(0, p2, &s);
-        saveScore(0, p3, &s);
-        saveScore(0, p4,  &s);
-        saveScore(0, p5,  &s);
-        serialize(s);
-        Scoreboard s2;
-        memset(&s2, 0x00, sizeof(Scoreboard));
-        deserialize(&s2);
+        scoreBoard s;
+        memset(&s, 0x00, sizeof(scoreBoard));
+        scoreBoard::DataPlayer p1 {"chr",2};
+        scoreBoard::DataPlayer p2 {"ddd",5};
+        scoreBoard::DataPlayer p3 {"sss",6};
+        scoreBoard::DataPlayer p4{"cri",7};
+        scoreBoard::DataPlayer p5 {"cnn",2};
+        scoreBoard::saveScore(0, p1, &s);
+        scoreBoard::saveScore(0, p2, &s);
+        scoreBoard::saveScore(0, p3, &s);
+        scoreBoard::saveScore(0, p4,  &s);
+        scoreBoard::saveScore(0, p5,  &s);
+        scoreBoard::serialize(s);
+        scoreBoard s2;
+        memset(&s2, 0x00, sizeof(scoreBoard));
+        scoreBoard::deserialize(&s2);
         attroff(COLOR_PAIR(2));
-        printData(s2,0,score);
+        scoreBoard::printData(s2,0,score);
     }
     if(choise == 1){
         Game game;

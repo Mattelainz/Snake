@@ -12,19 +12,32 @@
 
 using namespace std;
 
-struct DataPlayer{
-    char name[4];
-    int score;
-};
+class scoreBoard {
+    
+    public:
 
-struct Scoreboard {
+    struct DataPlayer{
+        char name[4];
+        int score;
+    };
+
     DataPlayer levelScores[30][5];
-};
 
-void serialize(Scoreboard scoreboard);
-void deserialize(Scoreboard*scoreboard);
-void saveScore(int level, DataPlayer score, Scoreboard*scoreboard);
-void printData(Scoreboard scoreboard, int level, WINDOW* win);
+
+    static void serialize(scoreBoard scoreboard);
+    static void deserialize(scoreBoard*scoreboard);
+    static void saveScore(int level, DataPlayer score, scoreBoard*scoreboard);
+    static void printData(scoreBoard scoreboard, int level, WINDOW* win);
+    static scoreBoard* nextPage(scoreBoard* curr);
+    static scoreBoard* beforePage(scoreBoard* curr);
+    static void openScoreBoard(scoreBoard* startPage);
+
+    private:
+    scoreBoard* next;
+    scoreBoard* before;
+    int id;
+
+};
 
 
 #endif
