@@ -1,37 +1,33 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
+#include <cstdint>
 #include <ncurses.h>
+#include <cstring>
+#include <ncurses.h>
+#include <cstring>
+#include <stdlib.h>
+#include <unistd.h>
+#include <ctime>
 #include "Snake.hpp"
-#include "Food.hpp"
-#include "data/ScoreBoard.hpp"
-#include "core/GraphicsManager.hpp"
 
-class Game {
-private:
-    GraphicsManager* graphics;
-    WINDOW* gameWindow;
-    Snake* snake;
-    Food* food;
-    ScoreBoard* scoreBoard;
-    
-    int width, height;
-    int score;
-    int startTime;
-    bool gameRunning;
-    
-    char getInputWithTimeout(int timeout);
-    int getMillis();
-    void drawUI();
-    void gameOver();
-    
-public:
-    Game(GraphicsManager* gfxManager, int width = 100, int height = 50);
-    ~Game();
-    
-    void init();
-    void run();
-    void cleanup();
+class Game{
+    public:
+    Game();
+    const uint64_t MAX_TIME = 300000;
+    Snake snake;
+    int max_x,max_y;
+    int width, height,score;
+
+    void run(WINDOW*win,int start);
+    WINDOW* setBoard();
+    int getMillis() ;
+
+    private: 
+    bool GameLoop(WINDOW* win, int gameStartMillis);
+    char getInput(WINDOW*win);
 };
+
+
 
 #endif

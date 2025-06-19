@@ -1,40 +1,30 @@
 #ifndef SNAKE_HPP
 #define SNAKE_HPP
 
-#include <ncurses.h>
+#include <stdlib.h>
+    struct Object {
+        Object*next;
+        int y;
+        int x;
+        char type;
+    };
+class Snake{
+    public:
 
-class SnakeSegment {
-public:
-    SnakeSegment* next;
-    int x, y;
-    char type;
-    
-    SnakeSegment(int x, int y, char type);
-    ~SnakeSegment();
-};
+    Snake(int snakeSize,int x, int y);
+    int snakeSize;
+    int x , y;
+    int width ;
+    int height;
+    Object *head;
+    Object *tail;
+    Object *cibo;
 
-class Snake {
-private:
-    SnakeSegment* head;
-    SnakeSegment* tail;
-    int size;
-    char lastDirection;
+    bool snake_move(char chinput, int*y, int*x) ;
+    void initSnake();
+    void setParam();
+
     
-public:
-    Snake(int startX, int startY, int initialSize);
-    ~Snake();
-    
-    bool move(char direction);
-    void draw(WINDOW* win);
-    void clear(WINDOW* win);
-    bool checkSelfCollision();
-    bool checkWallCollision(int width, int height);
-    bool checkFoodCollision(int foodX, int foodY);
-    void grow();
-    
-    int getHeadX() const { return head->x; }
-    int getHeadY() const { return head->y; }
-    int getSize() const { return size; }
 };
 
 #endif

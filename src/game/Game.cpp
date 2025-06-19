@@ -1,120 +1,7 @@
 #include "Game.hpp"
-#include <cstdlib>
-#include <ctime>
-#include <cstring>
+#include "Snake.hpp"
+#include <ncurses.h>
 
-Game::Game(GraphicsManager* gfxManager, int w, int h) 
-    : graphics(gfxManager), width(w), height(h), score(0), gameRunning(false) {
-    gameWindow = nullptr;
-    snake = nullptr;
-    food = nullptr;
-    scoreBoard = new ScoreBoard();
-}
-
-Game::~Game() {
-    cleanup();
-    delete scoreBoard;
-}
-
-void Game::init() {
-    srand(time(NULL));
-    
-    // Crea la finestra di gioco usando GraphicsManager
-    gameWindow = graphics->createBorderedWindow(height, width, 2, 2);
-    wrefresh(gameWindow);
-    
-    // Inizializza snake
-    snake = new Snake(20, 20, 10);
-    
-    // Inizializza food
-    food = new Food(width, height);
-    
-    // Carica i punteggi esistenti
-    scoreBoard->loadFromFile();
-    
-    startTime = getMillis();
-    gameRunning = true;
-}
-
-void Game::run() {
-    if (!gameRunning) {
-        init();
-    }
-    
-    char lastInput = 'd';
-    
-    while (gameRunning) {
-        char input = getInputWithTimeout(500);
-        
-        if (input == ERR) {
-            input = lastInput;
-        }
-        
-        // Muovi il serpente
-        if (snake->move(input)) {
-            lastInput = input;
-        }
-        
-        // Disegna il cibo
-        food->draw(gameWindow);
-        
-        // Disegna UI
-        drawUI();
-        
-        // Controlla collisioni con le pareti
-        if (snake->checkWallCollision(width, height)) {
-            gameRunning = false;
-            break;
-        }
-        
-        // Controlla auto-collisione
-        if (snake->checkSelfCollision()) {
-            gameRunning = false;
-            break;
-        }
-        
-        // Cancella posizione precedente della coda (solo l'ultimo segmento)
-        // Questo è un po' complicato da implementare esattamente come nel codice originale
-        // Per ora disegniamo tutto il serpente ogni frame
-        
-        // Disegna il serpente
-        snake->draw(gameWindow);
-        
-        // Controlla se ha mangiato il cibo
-        if (snake->checkFoodCollision(food->getX(), food->getY())) {
-            food->spawn();
-            score++;
-        }
-        
-        wrefresh(gameWindow);
-    }
-    
-    gameOver();
-}
-
-void Game::cleanup() {
-    if (gameWindow) {
-        wclear(gameWindow);
-        wrefresh(gameWindow);
-        delwin(gameWindow);
-        gameWindow = nullptr;
-    }
-}
-
-char Game::getInputWithTimeout(int timeout) {
-    int start = getMillis();
-    char lastInput = ERR;
-    ::timeout(0); // ncurses timeout
-    
-    while ((getMillis() - start) <= timeout) {
-        char temp = getch();
-        if (temp != ERR) {
-            lastInput = temp;
-        }
-    }
-    
-    return lastInput;
-}
 
 int Game::getMillis() {
     struct timespec ts;
@@ -122,31 +9,133 @@ int Game::getMillis() {
     return uint64_t(ts.tv_sec) * 1000 + ts.tv_nsec / 1000000;
 }
 
-void Game::drawUI() {
-    mvprintw(0, 0, "Score: %d", score);
-    mvprintw(0, 20, "Time: %d", (getMillis() - startTime) / 1000);
-    refresh();
+Game::Game(): snake(3, 20, 20){
+    this->max_x = getmaxx(stdscr);
+    this->max_y = getmaxy(stdscr);
+    this->width = max_x*0.8;
+    this->height = max_y*0.8;
+    this->score = 0;
 }
 
-void Game::gameOver() {
-    clear();
-    wclear(gameWindow);
-    wrefresh(gameWindow);
+char Game::getInput(WINDOW*win) {
+    int TIMEOUT = 500;
+    int start = getMillis();
+    char lastInput = ERR;
+    timeout(0);
+    int i = 0;
+    while((getMillis() - start) <= TIMEOUT) {
+        //mvwprintw(win, 0, 20, "%d", (getMillis() - start));
+        char temp = getch();
+        if(temp != ERR)
+            lastInput = temp;
+    }
+    return lastInput;
+}
+
+WINDOW* Game::setBoard(){
+    WINDOW*win = newwin(height, width, max_y*0.1, max_x*0.1);
     refresh();
+
+    box(win, 0,0);
+    wrefresh(win);
+    return win;
+}
+
+void Game::run(WINDOW*win,int start){    
     
-    echo();
-    mvwprintw(gameWindow, 20, 20, "Inserire il tuo nome: ");
-    char playerName[100];
-    flushinp();
-    wgetstr(gameWindow, playerName);
-    
-    // Salva il punteggio
-    scoreBoard->addScore(0, string(playerName), score);
-    scoreBoard->saveToFile();
-    
-    wprintw(gameWindow, "\nHai scritto: %s", playerName);
-    wprintw(gameWindow, "\nPunteggio finale: %d", score);
-    wrefresh(gameWindow);
-    
-    wgetch(gameWindow);
+    attroff(COLOR_PAIR(2));
+    char last_chinput = 'd';
+    while(1) {
+        char chinput = getInput(win);
+        
+        if(chinput == ERR) {
+            chinput = last_chinput;
+        }
+        if(!snake.snake_move(chinput, &snake.y, &snake.x)) {
+            snake.snake_move(last_chinput, &snake.y, &snake.x);
+        } else last_chinput = chinput;
+        
+        mvwprintw(win, snake.cibo->y, snake.cibo->x, "%c", snake.cibo->type);
+        wrefresh(win);
+
+        if(!GameLoop(win, start)) break;
+        wrefresh(win);
+
+
+        if(snake.x >= width-1 || snake.y >= height-1 || snake.x <= 0 || snake.y <= 0) {
+            snake.x = snake.head->x;
+            snake.y = snake.head->y;
+            break;
+        }
+
+        bool tailBitten = false;
+        
+        Object* temp = snake.tail;
+
+        do {
+            if(temp->x == snake.x && temp->y == snake.y) {
+                snake.x = snake.head->x;
+                snake.y = snake.head->y;
+                tailBitten = true;
+                break;
+            }
+        } while((temp = temp->next) != nullptr);
+        if(tailBitten) {
+            break;
+        }
+
+        mvwprintw(win, snake.tail->y, snake.tail->x, " ");
+
+        snake.head->next = snake.tail;
+
+        snake.tail->x = snake.x;
+        snake.tail->type = 'O';
+        snake.tail->y = snake.y;
+
+        snake.tail = snake.tail->next;          // salviamo nella nostra var tail, la nuova tail
+        snake.head->next->next = nullptr; // tail vecchia non ha un piu un next
+
+        snake.head->type = 'o';
+
+        snake.head = snake.head->next;
+        
+        //wclear(win);
+        //box(win, ':', '=');
+
+        temp = snake.tail;
+        do {
+            mvwprintw(win, temp->y, temp->x, "%c", temp->type);
+        } while((temp = temp->next) != nullptr);
+
+        if(snake.head->x == snake.cibo->x && snake.head->y == snake.cibo->y) {
+            snake.cibo->y = (int)(rand()%(height-2))+2;
+            snake.cibo->x = (int)(rand()%(width-2))+2;
+            score++;
+        }
+
+        wrefresh(win);
+    }
+
+
+}
+
+bool Game::GameLoop(WINDOW* win, int gameStartMillis){
+    uint64_t elapsed = getMillis() - gameStartMillis;
+    int remaining = MAX_TIME - elapsed;
+    if(remaining < 0) remaining = 0;
+
+    int mm = (remaining / 1000) / 60;
+    int ss = (remaining / 1000) % 60;
+    mvwprintw(stdscr, max_y*0.05, (max_x*0.1)+1,
+              "TIME : %02d:%02d", mm, ss);
+    mvwprintw(stdscr, max_y*0.05, (max_x*0.5),
+              "SCORE : %d", score);
+    mvwprintw(stdscr, max_y*0.9, (max_x*0.5)-2,
+              "LEVEL : %d", 1);
+    wrefresh(stdscr);
+
+    if (getMillis() - gameStartMillis >= MAX_TIME) {// tempo scaduto
+        return false;;
+    }
+    return true;
 }
