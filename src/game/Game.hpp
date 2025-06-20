@@ -10,6 +10,12 @@
 #include <unistd.h>
 #include <ctime>
 #include "Snake.hpp"
+#include "Snake.hpp"
+#include <cstring>
+#include <ncurses.h>
+
+#include "../scoreBoard/ScoreBoard.hpp"
+#include "../Levels/levels.hpp"
 
 class Game{
     public:
@@ -22,6 +28,7 @@ class Game{
     void run(WINDOW*win,int start);
     WINDOW* setBoard();
     int getMillis() ;
+    scoreBoard::DataPlayer gameOver(WINDOW* win);
 
     private: 
     bool GameLoop(WINDOW* win, int gameStartMillis);

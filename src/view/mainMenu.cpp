@@ -161,7 +161,7 @@ int mainMenu::page(int max_x,int max_y){
 
     repaintAll(max_x, max_y, numchoice);
     bool cont = true;
-    while ((c = getch()) != 27) {
+    while ((c = getch()) != 'x') {
         switch (c) {
             case KEY_UP :
                 if(numchoice == 1 || numchoice == 2){

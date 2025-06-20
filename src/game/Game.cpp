@@ -1,6 +1,4 @@
 #include "Game.hpp"
-#include "Snake.hpp"
-#include <ncurses.h>
 
 
 int Game::getMillis() {
@@ -135,7 +133,40 @@ bool Game::GameLoop(WINDOW* win, int gameStartMillis){
     wrefresh(stdscr);
 
     if (getMillis() - gameStartMillis >= MAX_TIME) {// tempo scaduto
-        return false;;
+        return false;
     }
     return true;
+}
+
+scoreBoard::DataPlayer Game::gameOver(WINDOW* win){
+    scoreBoard::DataPlayer dp;
+
+    wclear(win);
+
+    box(win, 0, 0);
+
+    int textLen = strlen("    _____      ___      __  __  ______  ____ __      __ ______  _____  ");
+
+
+    mvwprintw(win, getmaxy(win)/2-6, (getmaxx(win)/2)-(textLen/2), R"(   _____      ___      __  __  ______  ____ __      __ ______  _____   )");
+    mvwprintw(win, getmaxy(win)/2-5, (getmaxx(win)/2)-(textLen/2), R"(  / ____|    /   \    |  \/  ||  ____|/ __ \\ \    / /|  ____||  __ \  )");
+    mvwprintw(win, getmaxy(win)/2-4, (getmaxx(win)/2)-(textLen/2), R"( | |  __    /  ^  \   | \  / || |__  | |  | |\ \  / / | |__   | |__) | )");
+    mvwprintw(win, getmaxy(win)/2-3, (getmaxx(win)/2)-(textLen/2), R"( | | |_ |  /  /_\  \  | |\/| ||  __| | |  | | \ \/ /  |  __|  |  _  /  )");
+    mvwprintw(win, getmaxy(win)/2-2, (getmaxx(win)/2)-(textLen/2), R"( | |__| | /  _____  \ | |  | || |____| |__| |  \  /   | |____ | | \ \  )");
+    mvwprintw(win, getmaxy(win)/2-1, (getmaxx(win)/2)-(textLen/2), R"(  \_____|/__/     \__\|_|  |_||______|\____/    \/    |______||_|  \_\ )");
+
+    
+        echo();
+        mvwprintw(win, max_y*0.6, (getmaxx(win)/2-17), "insert your name to save score : ");
+        char str[4];
+        flushinp();    
+        wgetstr(win,str); 
+        strncpy(dp.name, str, 4);
+        dp.score = score;
+        noecho();
+
+        // gameOver(win);
+        // mvwprintw(win, max_y*0.6-2, max_x/2, "max 3 charachters");
+
+    return dp;
 }

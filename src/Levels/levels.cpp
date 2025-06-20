@@ -69,16 +69,3 @@ levels::level* levels::goToLevel(int num) {
 
     return nullptr;
 }
-
-void levels::printLevelList(const level* head) {
-    const level* cur = head;
-    while (cur) {
-        std::cout << "[id="       << cur->num
-                  << ", speed="   << cur->vel
-                  << ", len="     << cur->snakelen
-                  << ", bonus="   << cur->bonus
-                  << "] -> ";
-        cur = cur->next;
-    }
-    std::cout << "NULL\n";
-}

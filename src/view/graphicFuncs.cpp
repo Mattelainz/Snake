@@ -8,7 +8,6 @@ void init(){
     cbreak(); //serve per disabilitare "terminal line buffering"
     noecho(); //previene l'eco tra caratteri
     curs_set(0); //visibilità schermo
-    curs_set(TRUE);       //non nasconde il cursore // TODO: FIXME:
 }
 
 
@@ -38,14 +37,6 @@ void drawFilledCircle(int center_y, int center_x, int radius_x, int radius_y,int
         attroff(COLOR_PAIR(color));
 }
 
-
-void endGame(){
-    endwin();
-}
-
-void startGame(){
-
-}
 /*
 
 
