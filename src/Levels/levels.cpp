@@ -12,7 +12,7 @@ void levels::addLevel(int num, int vel, float bonus, int snakelen) {
             tmp = tmp->next;
         }   
         tmp->next = newLevel;
-        newLevel->before = tmp;     
+        newLevel->prev = tmp;     
     }
 }
 
@@ -43,9 +43,9 @@ levels::level* levels::nextLevel() {
     return curr;
 }
 
-levels::level* levels::beforeLevel() {
-    if(curr && curr->before) {
-        curr = curr->before;
+levels::level* levels::prevLevel() {
+    if(curr && curr->prev) {
+        curr = curr->prev;
     }
 
     return curr;

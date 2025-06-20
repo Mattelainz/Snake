@@ -10,7 +10,7 @@ class levels {
 
     struct level {
         level* next;
-        level* before;
+        level* prev;
         int num;
         int vel;
         float bonus;
@@ -21,7 +21,7 @@ class levels {
     void addLevel(int num, int vel, float bonus, int snakelen);
     void addAllLevels(int numLastLevel);
     level* nextLevel();
-    level* beforeLevel();
+    level* prevLevel();
     level* getCurrLevel();
     level* goToLevel(int num);
     void printLevelList(const level* head);

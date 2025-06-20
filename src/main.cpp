@@ -18,11 +18,12 @@ int main(int, char**){
     srand(time(NULL));
     init();
     
-    int choise = mainMenu::mainPage();
+    int choice = mainMenu::mainPage();
+    levels*lvl = new levels(10);
 
-    while(choise != -1){
+    while(choice != -1) {
         
-        if(choise == 0){
+        if(choice == 0) {
             WINDOW*score = newwin(getmaxy(stdscr)*0.8,getmaxx(stdscr)*0.8, getmaxy(stdscr)*0.1,getmaxx(stdscr)*0.1);
             wrefresh(score);
             // scoreBoard s;
@@ -39,12 +40,11 @@ int main(int, char**){
             // scoreBoard::saveScore(0, p5,  &s);
             // scoreBoard::serialize(s);
             scoreBoard s2;
-            //memset(&s2, 0x00, sizeof(scoreBoard));
+            memset(&s2, 0x00, sizeof(scoreBoard));
             scoreBoard::deserialize(&s2);
             attroff(COLOR_PAIR(2));
             scoreBoard::printData(s2,0,score);
-        }
-        if(choise == 1){
+        } else if(choice == 1) {
             Game game;
             int start = game.getMillis();
             WINDOW*win = game.setBoard();
@@ -53,11 +53,35 @@ int main(int, char**){
             scoreBoard toSerialize;
             scoreBoard::saveScore(0, dp, &toSerialize);
             scoreBoard::serialize(toSerialize);
-        }if(choise == 2){
-            //TODO : implementare scelta livelli
+        } else if(choice == 2) {
+            levels::level*currLvl = lvl->getCurrLevel();
+            WINDOW*lvlWindow = newwin(getmaxy(stdscr)*0.8,getmaxx(stdscr)*0.8, getmaxy(stdscr)*0.1,getmaxx(stdscr)*0.1);
+
+            mvwprintw(lvlWindow, 1, 1, "Selected Level: %d", currLvl->num);
+            mvwprintw(lvlWindow, 4, 1, "Velocita': %d  -  Bonus: %f  -  Lunghezza: %d", currLvl->vel, currLvl->bonus, currLvl->snakelen);
+            wrefresh(lvlWindow);
+
+            char input = ' ';
+            while((input = wgetch(lvlWindow)) != '\n') {
+                if(input == 'd') {
+                    currLvl = lvl->nextLevel();
+                } else if(input == 'a') {
+                    currLvl = lvl->prevLevel();
+                }
+
+                mvwprintw(lvlWindow, 1, 1, "Selected Level: %d", currLvl->num);
+                mvwprintw(lvlWindow, 4, 1, "Velocita': %d  -  Bonus: %f  -  Lunghezza: %d", currLvl->vel, currLvl->bonus, currLvl->snakelen);
+                wrefresh(lvlWindow);
+            }
+            
+            // TODO: arrivati qui avrai in currLvl il livello selezionato.
+            // c'e' da vedere se la classe di matte levels si salva il livello selezionato
+            // in base a quello poi quando fai game.run alla riga 51 passi insieme al resto anche levels o il level a seconda del come viene salvato
+            // FIXME: c'e' da aggiustare nella classe di matte levels, quando cerchi di andare in negativo (tipo lvl < 1) ti blocca
+            // ma se provi invece ad andare in overflow (tipo lvl > 10) non ti mostra che lo sta facendo ma si sballa il pointer 4some reason
         }
 
-        choise = mainMenu::mainPage();
+        choice = mainMenu::mainPage();
     }
 
 

@@ -176,18 +176,7 @@ int mainMenu::page(int max_x,int max_y){
                 }
             break;
             case '\n' : 
-                switch (numchoice) {
-                    case 0: 
-                         return 0;;
-                    break;
-                    case 1:
-                        return 1;
-                    break; 
-                    case 2:
-                    break; 
-                    default:
-                    break;
-                }
+                return numchoice;
             break;
         }
         clear();
